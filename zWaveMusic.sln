@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zWaveMusic", "zWaveMusic\zWaveMusic.vcxproj", "{966BDDEF-761C-4720-B7F0-293FE08697E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		G1 Debug|x86 = G1 Debug|x86
+		G1 Release|x86 = G1 Release|x86
+		G1A Debug|x86 = G1A Debug|x86
+		G1A Release|x86 = G1A Release|x86
+		G2 Debug|x86 = G2 Debug|x86
+		G2 Release|x86 = G2 Release|x86
+		G2A Debug|x86 = G2A Debug|x86
+		G2A Release|x86 = G2A Release|x86
+		MP Debug|x86 = MP Debug|x86
+		MP Release|x86 = MP Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1 Debug|x86.ActiveCfg = G1 Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1 Debug|x86.Build.0 = G1 Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1 Release|x86.ActiveCfg = G1 Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1 Release|x86.Build.0 = G1 Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1A Debug|x86.ActiveCfg = G1A Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1A Debug|x86.Build.0 = G1A Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1A Release|x86.ActiveCfg = G1A Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G1A Release|x86.Build.0 = G1A Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2 Debug|x86.ActiveCfg = G2 Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2 Debug|x86.Build.0 = G2 Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2 Release|x86.ActiveCfg = G2 Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2 Release|x86.Build.0 = G2 Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2A Debug|x86.ActiveCfg = G2A Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2A Debug|x86.Build.0 = G2A Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2A Release|x86.ActiveCfg = G2A Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.G2A Release|x86.Build.0 = G2A Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.MP Debug|x86.ActiveCfg = MP Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.MP Debug|x86.Build.0 = MP Debug|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.MP Release|x86.ActiveCfg = MP Release|Win32
+		{966BDDEF-761C-4720-B7F0-293FE08697E5}.MP Release|x86.Build.0 = MP Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9CB6E411-94C9-43B2-8824-62CD3E944F04}
+	EndGlobalSection
+EndGlobal
