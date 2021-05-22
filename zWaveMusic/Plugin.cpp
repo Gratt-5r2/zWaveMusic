@@ -22,6 +22,12 @@ namespace GOTHIC_ENGINE {
   void Game_Loop() {
     oCSoundController::GetInstance().FadeLoop();
     oCSoundController::GetInstance().UpdateTheme();
+    //static VirtualFile vfile( "test.gls", VDF_VIRTUAL );
+    //wchar buff[10];
+    //if( vfile.Read( buff, 2 ) == 0 ) {
+    //  vfile.Seek( 0 );
+    //}
+    //cmd << wstring( buff[0] );
   }
 
   void Game_PostLoop() {

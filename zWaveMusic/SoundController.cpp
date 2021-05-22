@@ -42,13 +42,13 @@ namespace GOTHIC_ENGINE {
 
 
   bool oCSoundController::StartTimeIsPassed() {
-    return Timer::GetTime() - PlayStartTime > 3000;
+    return Timer::GetTime() - PlayStartTime > SOUND_INTERVAL_BETWEEN_THEMES;
   }
 
 
 
   bool oCSoundController::SoundIsActive() {
-    return Sound.FX && Sound.Handle != Invalid;
+    return Sound.FX != Null;
   }
 
 
@@ -64,7 +64,7 @@ namespace GOTHIC_ENGINE {
 
     bool delayed = (Sound.FX ? true : false) || forciblyDelay;
 
-    if( Sound.Handle > 0 ) {
+    if( SoundIsActive() ) {
       PlaySoundOut( soundName );
       StopSound();
     }
@@ -75,12 +75,18 @@ namespace GOTHIC_ENGINE {
     if( !Sound.FX )
       return;
 
-    Sound.SetVolume( True );
-    Sound.Handle = zsound->PlaySound( Sound.FX, SOUND_THEME_CHANNEL );
-    Sound.SetVolume( 0.1f );
-    Sound.SetLooping( True );
-    PlayStartTime = Timer::GetTime();
+    if( !delayed ) {
+      Sound.Handle = zsound->PlaySound( Sound.FX, SOUND_THEME_CHANNEL );
+      Sound.FX->Release();
+      Sound.SetVolume( 0.1f );
+      Sound.SetLooping( True );
+    }
+    else {
+      Sound.Unpack();
+      Sound.Handle = Invalid;
+    }
 
+    PlayStartTime = Timer::GetTime();
     uint delay = delayed ? SOUND_START_DELAY : 0;
     SetFadeIn( Sound, delay, 1.0f );
   }
@@ -93,7 +99,7 @@ namespace GOTHIC_ENGINE {
 
     bool delayed = Sound.FX ? true : false;
 
-    if( Sound.Handle > 0 ) {
+    if( SoundIsActive() ) {
       PlaySoundOut( Sound.Name );
       StopSound();
     }
@@ -103,12 +109,18 @@ namespace GOTHIC_ENGINE {
     if( !Sound.FX )
       return;
 
-    Sound.SetVolume( True );
-    Sound.Handle = zsound->PlaySound( Sound.FX, SOUND_THEME_CHANNEL );
-    Sound.SetVolume( 0.1f );
-    Sound.SetLooping( True );
-    PlayStartTime = Timer::GetTime();
+    if( !delayed ) {
+      Sound.Handle = zsound->PlaySound( Sound.FX, SOUND_THEME_CHANNEL );
+      Sound.FX->Release();
+      Sound.SetVolume( 0.1f );
+      Sound.SetLooping( True );
+    }
+    else {
+      Sound.Unpack();
+      Sound.Handle = Invalid;
+    }
 
+    PlayStartTime = Timer::GetTime();
     uint delay = delayed ? SOUND_START_DELAY : 0;
     SetFadeIn( Sound, delay, 1.0f );
   }
@@ -130,19 +142,23 @@ namespace GOTHIC_ENGINE {
       Sound.FX = Null;
     }
 
-    if( Sound.Handle > 0 ) {
+    if( !IsBadHandle( Sound.Handle ) ) {
       zsound->StopSound( Sound.Handle );
       Sound.Handle = Invalid;
     }
 
     for( uint i = 0; i < FadeIn.GetNum(); i++ ) {
       FadeIn[i].FX->Release();
-      zsound->StopSound( FadeIn[i].Handle );
+      FadeIn[i].Pack();
+      if( !IsBadHandle( FadeIn[i].Handle ) )
+        zsound->StopSound( FadeIn[i].Handle );
     }
     
     for( uint i = 0; i < FadeOut.GetNum(); i++ ) {
       FadeOut[i].FX->Release();
-      zsound->StopSound( FadeOut[i].Handle );
+      FadeOut[i].Pack();
+      if( !IsBadHandle( FadeOut[i].Handle ) )
+        zsound->StopSound( FadeOut[i].Handle );
     }
 
     FadeIn.Clear();
@@ -191,6 +207,7 @@ namespace GOTHIC_ENGINE {
       return;
 
     zsound->PlaySound( sound, SOUND_THEME_CHANNEL_OUT );
+    sound->Release();
   }
 
 
@@ -211,7 +228,8 @@ namespace GOTHIC_ENGINE {
       float volume = sound.GetVolume();
       if( volume < 0.9f ) {
         sound.SetVolume( volume + sound.FadeSpeed );
-        break;
+        cmd << sound.GetVolume() << "  " << zsound->GetMasterVolume() << endl;
+        continue;
       }
 
       FadeIn.RemoveAt( i-- );
@@ -227,12 +245,14 @@ namespace GOTHIC_ENGINE {
         continue;
 
       float volume = sound.GetVolume();
-      if( volume > 0.0f + 0.001f ) {
+      if( volume > 0.01f ) {
         sound.SetVolume( volume - sound.FadeSpeed );
         break;
       }
 
-      zsound->StopSound( sound.Handle );
+      if( !IsBadHandle( sound.Handle ) )
+        zsound->StopSound( sound.Handle );
+
       sound.FX->Release();
       FadeOut.RemoveAt( i-- );
     }
@@ -247,7 +267,16 @@ namespace GOTHIC_ENGINE {
     for( uint i = 0; i < FadeIn.GetNum(); i++ ) {
       zTSoundDescriptor& sound = FadeIn[i];
       if( sound.FadeWait ) {
-        if( timer[sound.Handle].Await( sound.FadeWait ) ) {
+        if( timer[(uint)sound.FX].Await( sound.FadeWait ) ) {
+          if( IsBadHandle( sound.Handle ) ) {
+            Sound.Handle = zsound->PlaySound( sound.FX, SOUND_THEME_CHANNEL );
+            sound.FX->Release();
+            sound.Handle = Sound.Handle;
+            sound.Pack();
+            Sound.SetVolume( 0.1f );
+            Sound.SetLooping( True );
+          }
+
           sound.FadeWait = 0;
           sound.SetPositionMs( 0 );
           sound.Resume();
@@ -270,6 +299,7 @@ namespace GOTHIC_ENGINE {
 
 
   void oCSoundController::SetFadeIn( zTSoundDescriptor sound, const uint& delay, const float& fadeSpeed ) {
+    cmd << "In " << sound.Name << endl;
     sound.FadeSpeed = fadeSpeed;
     sound.FadeWait = delay;
     FadeOut ^= sound;
@@ -279,7 +309,7 @@ namespace GOTHIC_ENGINE {
 
 
   void oCSoundController::SetFadeOut( zTSoundDescriptor sound, const uint& delay, const float& fadeSpeed ) {
-    if( sound.FX == Null || sound.Handle == Invalid )
+    if( sound.FX == Null )
       return;
 
     sound.FadeSpeed = fadeSpeed;
@@ -291,6 +321,9 @@ namespace GOTHIC_ENGINE {
 
 
   void oCSoundController::UpdateTheme() {
+    if( !StartTimeIsPassed() )
+      return;
+
     oHEROSTATUS status = ogame->GetHeroStatus();
 
     switch( status ) 	{

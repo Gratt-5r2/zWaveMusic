@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/zWaveMusic/G2A Release
+/zWaveMusic/MP Release

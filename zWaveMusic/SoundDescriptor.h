@@ -10,6 +10,7 @@ namespace GOTHIC_ENGINE {
     float FadeSpeed;
     uint FadeWait;
 
+    zTSoundDescriptor();
     bool operator == ( const zTSoundDescriptor& other ) const;
     float GetVolume();
     void SetVolume( const float& volume );
@@ -17,5 +18,7 @@ namespace GOTHIC_ENGINE {
     void SetPositionMs( const long& position_ms );
     void Pause();
     void Resume();
+    void Unpack();
+    void Pack();
   };
 }
