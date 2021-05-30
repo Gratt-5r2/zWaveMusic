@@ -2,6 +2,12 @@
 // Union SOURCE file
 
 namespace GOTHIC_ENGINE {
+  static float CalcAdaptiveSoundVolume( const float& sourceVolume ) {
+    float soundMult = SafeDiv( 1.0f, zCSndSys_MSS::prefs.volume );
+    float musicMult = ((zCMusicSys_DirectMusic*)zmusic)->prefs.volume;
+    return sourceVolume * soundMult * musicMult;
+  }
+
   inline bool IsBadHandle( const int& handle ) {
     return handle == Invalid || handle == None;
   }
@@ -11,6 +17,7 @@ namespace GOTHIC_ENGINE {
     Handle    = Invalid;
     Theme     = 0;
     FadeSpeed = 1.0f;
+    Volume    = 1.0f;
     FadeWait  = 5000;
   }
 
@@ -19,26 +26,32 @@ namespace GOTHIC_ENGINE {
   }
 
   float zTSoundDescriptor::GetVolume() {
-    if( IsBadHandle( Handle ) )
-      return 0.9f;
+    return Volume;
+  }
 
-    int frequency = 0;
-    float volume = 0.0f;
-    float pan = 0.0f;
-    zsound->GetSoundProps( Handle, frequency, volume, pan );
-    return volume;
+  float zTSoundDescriptor::GetVolumeAdaptive() {
+    return CalcAdaptiveSoundVolume( Volume );
   }
 
   void zTSoundDescriptor::SetVolume( const float& newVolume ) {
     if( IsBadHandle( Handle ) )
       return;
 
-    int frequency = 0;
-    float volume = 0.0f;
-    float pan = 0.0f;
-    zsound->GetSoundProps( Handle, frequency, volume, pan );
-    volume = zLimit( newVolume, 0.0f, 0.99f );
-    zsound->UpdateSoundProps( Handle, frequency, volume, pan );
+    Volume = newVolume;
+    UpdateVolume();
+  }
+
+  void zTSoundDescriptor::UpdateVolume() {
+    if( IsBadHandle( Handle ) )
+      return;
+
+    float volumeAdaptive = GetVolumeAdaptive();
+
+    if( AIL_set_sample_volume_pan ) {
+      zCActiveSnd* snd = zCActiveSnd::GetHandleSound( Handle );
+      if( snd )
+        AIL_set_sample_volume_pan( snd->sample, volumeAdaptive, 0.5f );
+    }
   }
 
   void zTSoundDescriptor::SetLooping( const bool& looping ) {

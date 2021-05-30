@@ -1,2 +1,11 @@
 // This patch will be automatically executed after loading the plugin.
-// TODO
+
+/*
+#engine [G2A]
+	#patch
+		MemSet(0x004EBAA6, '90', 0x004EBACA - 0x004EBAA6)
+		MemSet(0x004EBC8F, '90', 0x004EBCB3 - 0x004EBC8F)
+		MemSet(0x004EC307, '90', 0x004EC332 - 0x004EC307)
+	#/patch
+#/engine
+*/
