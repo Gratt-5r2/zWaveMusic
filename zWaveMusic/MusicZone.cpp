@@ -50,9 +50,14 @@ namespace GOTHIC_ENGINE {
     bool dmToWav = ActiveZoneIsDM();
     if( dmToWav ) {
       zmusic->PlayThemeByScript( "SYS_LOADING", 0, 0 );
-      zCSoundFX* sound = zsound->LoadSoundFX( "DEFAULT_FX_OUT.WAV" );
-      if( sound )
-        zsound->PlaySound( sound, SOUND_THEME_CHANNEL_OUT );
+      zCSndFX_MSS* soundFX = (zCSndFX_MSS*)zsound->LoadSoundFX( "DEFAULT_FX_OUT.WAV" );
+      if( soundFX ) {
+        zTSoundDescriptor Sound;
+        Sound.FX     = soundFX;
+        Sound.Handle = zsound->PlaySound( soundFX, SOUND_THEME_CHANNEL_OUT );
+        Sound.SetVolume( 1.0f );
+        soundFX->Release();
+      }
     }
     else
       zmusic->Stop();
